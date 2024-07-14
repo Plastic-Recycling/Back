@@ -2,6 +2,8 @@ package recycling.back.user.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import recycling.back.recycle.entity.RecycleCount;
 import recycling.back.user.dto.RegisterUser;
 
 @Entity
@@ -16,6 +18,9 @@ public class User {
     private String username;
 
     private String password;
+
+    @OneToOne(mappedBy = "user")
+    private RecycleCount recycleCount;
 
     public User() {}
 
@@ -44,5 +49,9 @@ public class User {
 
     public String getUsername() {
         return username;
+    }
+
+    public RecycleCount getRecycleCount() {
+        return recycleCount;
     }
 }
