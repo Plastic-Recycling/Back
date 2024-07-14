@@ -29,4 +29,20 @@ public class User {
         this.username = registerUser.getUsername();
         this.password = registerUser.getPassword();
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getUsername() {
+        return username;
+    }
 }
