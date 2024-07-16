@@ -4,7 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
-import recycling.back.user.entity.User;
+import recycling.back.user.register.entity.User;
 
 @Entity
 public class RecycleCount {

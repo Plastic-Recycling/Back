@@ -1,4 +1,4 @@
-package recycling.back.global.cache;
+package recycling.back.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.CacheManager;

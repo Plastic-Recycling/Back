@@ -6,8 +6,8 @@ import recycling.back.recycle.dto.RecycleTotalCount;
 import recycling.back.recycle.util.PlasticCal;
 import recycling.back.recycle.repository.RecycleCountRepository;
 import recycling.back.recycle.entity.RecycleCount;
-import recycling.back.user.entity.User;
-import recycling.back.user.repository.UserRepository;
+import recycling.back.user.register.entity.User;
+import recycling.back.user.register.repository.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

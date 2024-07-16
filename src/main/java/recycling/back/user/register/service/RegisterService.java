@@ -1,5 +1,6 @@
-package recycling.back.user.service;
+package recycling.back.user.register.service;
 
+import com.sun.jdi.request.DuplicateRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -7,13 +8,20 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import recycling.back.user.dto.RegisterUser;
-import recycling.back.user.entity.User;
-import recycling.back.user.repository.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
+import recycling.back.exception.DifferentCachedInfoException;
+import recycling.back.exception.EmailDuplicateException;
+import recycling.back.exception.NotInitialEmailException;
+import recycling.back.user.register.dto.RegisterUser;
+import recycling.back.user.register.entity.User;
+import recycling.back.user.register.repository.UserRepository;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class RegisterService {
     private final JavaMailSender mailSender;
     private final UserRepository userRepository;
@@ -37,10 +45,11 @@ public class RegisterService {
     private String generateTokenAndCaching(String email){
         String token = UUID.randomUUID().toString();
         Cache cache = cacheManager.getCache("verifyToken");
-        if(cache != null){
+        if(cache != null && cache.get(email) == null){
             cache.put(email, token);
+            return token;
         }
-        return token;
+        throw new DuplicateRequestException("이미 완료된 요청입니다. 이메일을 확인해 주세요");
     }
 
     private void sendEmail(String email, String token) {
@@ -53,16 +62,18 @@ public class RegisterService {
 
     private void checkEmailDuplication(String email) {
         if(userRepository.findByEmail(email).isPresent()){
-            throw new RuntimeException();
+            throw new EmailDuplicateException();
         }
     }
 
-    public void confirmEmail(String email, String token) {
+    public String confirmEmail(String email, String token) {
         boolean check = checkToken(email, token);
         if(check){
             confirmEmailCached(email);
+            return String.format("http://localhost:5173/complete-registration?email=%s"
+            , URLEncoder.encode(email, StandardCharsets.UTF_8));
         }else{
-            throw new RuntimeException();
+            throw new DifferentCachedInfoException();
         }
     }
 
@@ -87,7 +98,7 @@ public class RegisterService {
 
     public void completeRegistration(RegisterUser registerUser) {
         if (!isEmailValid(registerUser.getEmail())){
-            throw new RuntimeException();
+            throw new NotInitialEmailException();
         }
         registration(registerUser);
     }

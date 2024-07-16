@@ -1,8 +1,8 @@
-package recycling.back.user.repository;
+package recycling.back.user.register.repository;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import recycling.back.user.entity.User;
+import recycling.back.user.register.entity.User;
 
 import java.util.Optional;
 

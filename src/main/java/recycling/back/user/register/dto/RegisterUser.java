@@ -1,4 +1,4 @@
-package recycling.back.user.dto;
+package recycling.back.user.register.dto;
 
 public class RegisterUser {
     private String email;

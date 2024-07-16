@@ -1,10 +1,10 @@
-package recycling.back.global.util;
+package recycling.back.util;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.net.URI;
 import java.util.Map;
 
 public class ResponseUtil {
@@ -12,10 +12,8 @@ public class ResponseUtil {
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
-    public static ResponseEntity<Map<String, String>> ok(String key, String value) {
-        Map<String, String> response = new HashMap<>();
-        response.put(key, value);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+    public static ResponseEntity<String> found(String url) {
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(url)).build();
     }
 
     public static ResponseEntity<Map<String, BigDecimal>> ok(Map<String, BigDecimal> rate){
