@@ -72,7 +72,9 @@ public class SecurityConfig {
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .requestMatchers(
                                 new AntPathRequestMatcher("/register/**"),
-                                new AntPathRequestMatcher("/auth/**")
+                                new AntPathRequestMatcher("/auth/**"),
+                                new AntPathRequestMatcher("/detection/**"),
+                                new AntPathRequestMatcher("/contact")
                         ).permitAll()
                         .requestMatchers(
                                 new AntPathRequestMatcher("/recycle/**")
