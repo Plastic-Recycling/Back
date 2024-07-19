@@ -15,6 +15,8 @@ import recycling.back.user.register.dto.RegisterUser;
 import recycling.back.user.register.service.RegisterService;
 import recycling.back.util.ResponseUtil;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/register")
 @Tag(name = "register", description = "register API")
@@ -31,9 +33,15 @@ public class RegisterController {
             @ApiResponse(responseCode = "200", description = "이메일 전송 성공"),
             @ApiResponse(responseCode = "400", description = "실패")
     })
-    public ResponseEntity<String> verifyEmail(@RequestParam(value = "email") String email) {
-        registerService.verifyEmail(email);
-        return ResponseUtil.ok("이메일 확인");
+    public ResponseEntity<Map<String, Object>> verifyEmail(@RequestParam(value = "email") String email) {
+        boolean isNewEmail = registerService.verifyEmail(email);
+        String message;
+        if(isNewEmail){
+            message = "이메일 확인 메일이 전송되었습니다.";
+        }else{
+            message = "이미 인증된 이메일입니다. 토큰을 입력해주세요.";
+        }
+        return ResponseUtil.ok(isNewEmail, message);
     }
     
     @GetMapping("/confirm")
