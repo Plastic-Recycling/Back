@@ -16,7 +16,8 @@ import recycling.back.exception.response.ErrorResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({EmailDuplicateException.class, NotInitialEmailException.class, DifferentCachedInfoException.class, DuplicateRequestException.class})
+    @ExceptionHandler({EmailDuplicateException.class, NotInitialEmailException.class,
+            DifferentCachedInfoException.class, DuplicateRequestException.class})
     protected ResponseEntity<Object> handleRegisterException(RuntimeException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
         return handleExceptionInternal(ex, errorResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);

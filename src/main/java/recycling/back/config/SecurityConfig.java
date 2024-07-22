@@ -73,11 +73,12 @@ public class SecurityConfig {
                         .requestMatchers(
                                 new AntPathRequestMatcher("/register/**"),
                                 new AntPathRequestMatcher("/auth/**"),
-                                new AntPathRequestMatcher("/detection/**"),
-                                new AntPathRequestMatcher("/contact")
+                                new AntPathRequestMatcher("/recycle/detection"),
+                                new AntPathRequestMatcher("/contact"),
+                                new AntPathRequestMatcher("/recycle/mount")
                         ).permitAll()
                         .requestMatchers(
-                                new AntPathRequestMatcher("/recycle/**")
+                                new AntPathRequestMatcher("/recycle/profile")
                         ).authenticated()
                 );
     }

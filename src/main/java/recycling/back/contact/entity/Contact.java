@@ -6,8 +6,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -39,7 +37,6 @@ public class Contact {
     private boolean agreeToTerms;
 
     @CreatedDate
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createDate;
 
     public Contact() {}

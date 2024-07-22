@@ -70,9 +70,9 @@ public class PlasticCal {
         BigDecimal carbonPS = emissionPS.divide(productionPS, mc);
 
         // 재활용 시 탄소배출 감소량
-        BigDecimal recyclePE = carbonPE.multiply(new BigDecimal("0.8"), mc);
-        BigDecimal recyclePP = carbonPP.multiply(new BigDecimal("0.8"), mc);
-        BigDecimal recyclePS = carbonPS.multiply(new BigDecimal("0.8"), mc);
+        BigDecimal recyclePE = carbonPE.multiply(new BigDecimal("0.75"), mc);
+        BigDecimal recyclePP = carbonPP.multiply(new BigDecimal("0.75"), mc);
+        BigDecimal recyclePS = carbonPS.multiply(new BigDecimal("0.75"), mc);
 
     }
 }
