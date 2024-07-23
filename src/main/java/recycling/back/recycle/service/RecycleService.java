@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class RecycleService {
@@ -65,34 +66,38 @@ public class RecycleService {
         Map<String, List<Map<String, Object>>> response = new HashMap<>();
 
         response.put("plasticCounts", List.of(
-                Map.of("name", "PP", "count", recycleCount.getPp()),
-                Map.of("name", "PS", "count", recycleCount.getPs()),
-                Map.of("name", "PE", "count", recycleCount.getPe())
+                Map.of("name", "PP", "count", nullToZero(recycleCount.getPp(),0)),
+                Map.of("name", "PS", "count", nullToZero(recycleCount.getPs(),0)),
+                Map.of("name", "PE", "count", nullToZero(recycleCount.getPe(),0))
         ));
 
         response.put("prices", List.of(
-                Map.of("name", "PP", "price", recycleCount.getPpRate()),
-                Map.of("name", "PS", "price", recycleCount.getPsRate()),
-                Map.of("name", "PE", "price", recycleCount.getPeRate())
+                Map.of("name", "PP", "price", nullToZero(recycleCount.getPpRate(),0)),
+                Map.of("name", "PS", "price", nullToZero(recycleCount.getPsRate(),0)),
+                Map.of("name", "PE", "price", nullToZero(recycleCount.getPeRate(),0))
         ));
 
         response.put("weights", List.of(
-                Map.of("name", "PP", "weight", recycleCount.getPpWeight()),
-                Map.of("name", "PS", "weight", recycleCount.getPsWeight()),
-                Map.of("name", "PE", "weight", recycleCount.getPeWeight())
+                Map.of("name", "PP", "weight", nullToZero(recycleCount.getPpWeight(),0)),
+                Map.of("name", "PS", "weight", nullToZero(recycleCount.getPsWeight(),0)),
+                Map.of("name", "PE", "weight", nullToZero(recycleCount.getPeWeight(),0))
         ));
 
         response.put("carbonReductions", List.of(
-                Map.of("name", "PP", "reduction", recycleCount.getPpCO2()),
-                Map.of("name", "PS", "reduction", recycleCount.getPsCO2()),
-                Map.of("name", "PE", "reduction", recycleCount.getPeCO2())
+                Map.of("name", "PP", "reduction", nullToZero(recycleCount.getPpCO2(),0)),
+                Map.of("name", "PS", "reduction", nullToZero(recycleCount.getPsCO2(),0)),
+                Map.of("name", "PE", "reduction", nullToZero(recycleCount.getPeCO2(),0))
         ));
 
         return response;
     }
 
+    private static <T extends Number> T nullToZero(T value, T zero) {
+        return Optional.ofNullable(value).orElse(zero);
+    }
+
     public List<Map<String, Object>> detection(MultipartFile[] images){
-        String flaskUrl = "http://0.0.0.0:5000/classify";
+        String flaskUrl = "http://localhost:5000/predict";
         MountPlastic mountPlastic = getAmountPlastic();
         List<DetectionResult> results = flaskResponse(images, flaskUrl);
         List<Map<String, Object>> responseResults = new ArrayList<>();
@@ -104,7 +109,7 @@ public class RecycleService {
             List<BigDecimal> plastic = recycleCountUp(result.getLabel(), result.getEstimateWeight(), mountPlastic);
 
             Map<String, Object> responseResult = new HashMap<>();
-            responseResult.put("processedImage", ".jpg"); // 나중에 반환 이미지
+            responseResult.put("processedImage", result.getProcessedImage());
             responseResult.put("type", result.getLabel());
             responseResult.put("weight", result.getEstimateWeight());
             responseResult.put("carbonReduction", plastic.get(1));
@@ -120,7 +125,7 @@ public class RecycleService {
     }
 
     public List<Map<String, Object>> detection(MultipartFile[] images, User user){
-        String flaskUrl = "http://0.0.0.0:5000/classify";
+        String flaskUrl = "http://localhost:5000/predict";
         MountPlastic mountPlastic = getAmountPlastic();
         List<DetectionResult> results = flaskResponse(images, flaskUrl);
         List<Map<String, Object>> responseResults = new ArrayList<>();
@@ -132,7 +137,7 @@ public class RecycleService {
             List<BigDecimal> plastic = recycleCountUp(result.getLabel(), result.getEstimateWeight(),user, mountPlastic);
 
             Map<String, Object> responseResult = new HashMap<>();
-            responseResult.put("processedImage", ".jpg"); // 나중에 반환 이미지
+            responseResult.put("processedImage", result.getProcessedImage()); // 나중에 반환 이미지
             responseResult.put("type", result.getLabel());
             responseResult.put("weight", result.getEstimateWeight());
             responseResult.put("carbonReduction", plastic.get(1));
@@ -169,10 +174,11 @@ public class RecycleService {
         List<DetectionResult> results = new ArrayList<>();
 
         for (Map<String, Object> item : responseBody) {
+            byte[] processedImage = (byte[]) item.get("processedImage");
             String label = (String) ((Map<String, Object>) ((List) item.get("shapes")).get(0)).get("label");
             double estimatedWeight = ((Number) item.get("estimatedWeight")).doubleValue();
 
-            results.add(new DetectionResult(label, (int)estimatedWeight));
+            results.add(new DetectionResult(label, (int)estimatedWeight, processedImage));
         }
 
         return results;
