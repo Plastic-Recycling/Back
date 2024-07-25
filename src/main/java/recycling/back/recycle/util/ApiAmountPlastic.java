@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 @Service
@@ -47,7 +48,8 @@ public class ApiAmountPlastic {
         for (JsonNode node : dataNode) {
             if (node.path("MATERIAL_NAME").asText().equals(materialName)
                     && node.path("INPUT_YYMM").asText().equals(currentYearMonth)) {
-                return node.path("ALL_AVG").decimalValue();
+                BigDecimal value = node.path("ALL_AVG").decimalValue();
+                return value.divide(new BigDecimal(1000), 2, RoundingMode.HALF_UP);
             }
         }
 

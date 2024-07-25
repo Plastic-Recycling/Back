@@ -1,11 +1,9 @@
 package recycling.back.recycle.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -26,11 +24,7 @@ import recycling.back.user.register.repository.UserRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class RecycleService {
@@ -163,22 +157,32 @@ public class RecycleService {
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        ResponseEntity<List> flaskResponse = restTemplate.exchange(
+        ResponseEntity<String> flaskResponse = restTemplate.exchange(
                 flaskUrl,
                 HttpMethod.POST,
                 requestEntity,
-                List.class
+                String.class
         );
 
-        List<Map<String, Object>> responseBody = flaskResponse.getBody();
+        String responseBody = flaskResponse.getBody();
         List<DetectionResult> results = new ArrayList<>();
 
-        for (Map<String, Object> item : responseBody) {
-            byte[] processedImage = (byte[]) item.get("processedImage");
-            String label = (String) ((Map<String, Object>) ((List) item.get("shapes")).get(0)).get("label");
-            double estimatedWeight = ((Number) item.get("estimatedWeight")).doubleValue();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Map<String, Object>> jsonResult = objectMapper.readValue(responseBody, new TypeReference<List<Map<String, Object>>>() {});
 
-            results.add(new DetectionResult(label, (int)estimatedWeight, processedImage));
+            for (Map<String, Object> item : jsonResult) {
+                String processedImage = (String) item.get("processedImage");
+                byte[] imageBytes = Base64.getDecoder().decode(processedImage);
+
+                String label = (String) ((Map<String, Object>) ((List) item.get("shapes")).get(0)).get("label");
+                double estimatedWeight = ((Number) item.get("estimatedWeight")).doubleValue();
+
+                results.add(new DetectionResult(label, (int)estimatedWeight, imageBytes));
+            }
+        } catch (Exception e) {
+            // 예외 처리
+            e.printStackTrace();
         }
 
         return results;
@@ -214,6 +218,7 @@ public class RecycleService {
 
     private List<BigDecimal> recycleCountUp(String category, int weight, User user, MountPlastic mountPlastic){
         RecycleCount recycleCount = user.getRecycleCount();
+
         BigDecimal plasticWeight = new BigDecimal(weight);
         BigDecimal plasticRate;
         BigDecimal plasticCO2;
@@ -244,6 +249,7 @@ public class RecycleService {
             }
             default -> throw new IllegalStateException("Unexpected value: " + category);
         }
+        userRepository.save(user);
         recycleCountRepository.save(recycleCount);
 
         List<BigDecimal> plastic = new ArrayList<>();
