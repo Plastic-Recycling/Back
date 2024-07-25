@@ -1,5 +1,6 @@
 package recycling.back.user.register.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -36,8 +37,10 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "recycle_count_id", referencedColumnName = "id")
     private RecycleCount recycleCount;
+
 
     public User() {}
 
@@ -50,7 +53,13 @@ public class User {
         this.name = registerUser.getName();
         this.username = registerUser.getUsername();
         this.password = registerUser.getPassword();
+        this.recycleCount = new RecycleCount();
     }
+
+    public void addRole(Role role){
+        this.roles.add(role);
+    }
+
 
     public Long getId() {
         return id;
