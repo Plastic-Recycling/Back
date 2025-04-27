@@ -5,6 +5,29 @@ Plastic-Recycling의 백엔드 서버 리포지토리입니다.
 * 탄소 배출 감소량 및 재활용 절감 비용 계산
 * 회원가입후 프로필 페이지를 통한 회원 별 재활용 데이터 관리
 * 회원 별 데이터 정보 분석 및 결과 시각화
+
+### 디렉터리 구조
+```
+├── src/.../back
+│   ├── config # 프로젝트 제반 설정
+│   ├── contact # 문의하기 기능
+│   ├── exception # 전역 예외 처리 핸들러
+│   ├── jwt # jwt 제반 설정
+│   ├── recycle # 플라스틱 재활용 탄소배출 감소량 계산 및 비용 계산
+│   ├── user
+│   │   ├── auth # 사용자 인증 기능
+│   │   └── register # 사용자 회원가입 기능
+│   └── util # 공통 응답 유틸 클래스
+└── docs # 문서 관리용 폴더
+```
+
+### 의존성 및 라이브러리
+> 기본적인 의존성과 사용한 라이브러리입니다. 자세한 사항은 build.gradle.kts 파일을 참고해주세요.
+* Java 17
+* Gradle 8.8
+* Spring-Boot 3.3.1
+* Caffeine-Cache 3.1.8
+* jjwt 0.12.6
 ##
 ### 작업
 #### 탄소 배출 감소량 및 재활용 절감 비용 계산 시스템 구현
@@ -47,6 +70,14 @@ Plastic-Recycling의 백엔드 서버 리포지토리입니다.
 * 진행 중인 회원가입 요청에 대해 중복 요청이 발생하는 경우 DuplicateRequestException을 통해 처리합니다.
 * 전역 예외 핸들러(GlobalExceptionHandler)를 구현하여 모든 예외를 일관된 형식의 ErrorResponse로 변환하고 적절한 HTTP 상태 코드와 함께 응답합니다.
 * 입력값 검증 실패 시 field별 상세 오류 정보를 제공하여 클라이언트 측에서 사용자 친화적인 피드백을 제공할 수 있도록 지원합니다.
+##
+### 다이어그램
+#### 회원가입 시퀀스
+![registration](https://raw.githubusercontent.com/Plastic-Recycling/Back/main/docs/registrationBg.png)
+#### 감지 시퀀스
+![detection](https://raw.githubusercontent.com/Plastic-Recycling/Back/main/docs/detectionBg.png)
+#### DB
+![db](https://raw.githubusercontent.com/Plastic-Recycling/Back/main/docs/db.png)
 ##
 ### 사용 기술
 <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"/> <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"/>
